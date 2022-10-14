@@ -1,0 +1,24 @@
+﻿@page "/"
+@inherits BoardBase
+
+<div class="container">
+    @if (status == GameStatus.NotStarted)
+    {
+        <button @onclick="StartGameAsync">Start Game</button>
+    }
+    else
+    {
+        TimeSpan timeGame = DateTime.Now.Subtract(GameStarted);
+        <span>@(timeGame.Hours > 0 ? timeGame.ToString(@"hh\:mm\:ss") : timeGame.ToString(@"mm\:ss"))</span>
+
+        <div class="row">
+            @foreach (var card in Cards)
+            {
+                <div class="col-md-4">
+                    <img src="data:image/png;base64,@card.Image" />
+                </div>
+            }
+        </div>
+    }
+</div>
+
