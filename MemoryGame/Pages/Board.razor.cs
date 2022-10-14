@@ -11,16 +11,56 @@ namespace MemoryGame.Pages
         public PeriodicTimer timer;
         public GameStatus status = GameStatus.NotStarted;
         private static Random Random = new();
+
+        public Card Card1;
+        public Card Card2;
+
         public async Task StartGameAsync()
         {
             Cards = new List<Card>(CardImages.Animals);
             GameIsValid();
-
-            Cards.AddRange(Cards);
-
+            List<Card> CardCopy = new();
+            foreach (var item in Cards)
+            {
+                CardCopy.Add(new Card(item.Image));
+            }
+            Cards.AddRange(CardCopy);
             Cards = Shuffle(Cards).ToList();
             status = GameStatus.Started;
             await StartTimerAsync();
+        }
+
+        public void Mark(Card card)
+        {
+            if (card.Selected || card == Card1 || card == Card2)
+            {
+                return;
+            }
+
+            if (Card1 == null || Card2 == null)
+            {
+                if (Card1 == null)
+                {
+                    Card1 = card;
+                }
+                else
+                {
+                    Card2 = card;
+                }
+
+                if (Card1 != null && Card2 != null)
+                {
+                    _ = Task.Run(async () =>
+                    {
+                        await Task.Delay(1500);
+                        Card1.Match(Card2);
+                        Card1 = null;
+                        Card2 = null;
+                    });
+                }
+
+                StateHasChanged();
+            }
         }
 
         private async Task StartTimerAsync()
